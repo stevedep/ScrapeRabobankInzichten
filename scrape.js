@@ -1,4 +1,5 @@
-cats = [
+cats =   [
+    /*
     {"mainCategoryIdentification": 3001,"description": "Eigen rekening","sfcIcon_name": "money-bill-arrows"},
     {"mainCategoryIdentification": 3002,"description": "Sparen & beleggen","sfcIcon_name": "piggybank"},
     {"mainCategoryIdentification": 3003,"description": "Hobby’s & vrije tijd","sfcIcon_name": "ticket"},
@@ -12,7 +13,9 @@ cats = [
     {"mainCategoryIdentification": 3009,"description": "Cadeaus","sfcIcon_name": "gift"},
     {"mainCategoryIdentification": 3012,"description": "Goede doelen","sfcIcon_name": "hand-heart"},
     {"mainCategoryIdentification": 3013,"description": "Internet, TV & bellen","sfcIcon_name": "signal"},
-    {"mainCategoryIdentification": 3040,"description": "Huishouden & elektronica","sfcIcon_name": "table-lamp"},
+    {"mainCategoryIdentification": 3040,"description": "Huishouden & elektronica","sfcIcon_name": "table-lamp"}]
+
+    
     {"mainCategoryIdentification": 3041,"description": "Tuin & dier","sfcIcon_name": "bird"},
     {"mainCategoryIdentification": 3019,"description": "Onderwijs","sfcIcon_name": "book-cover"},
     {"mainCategoryIdentification": 3020,"description": "Kinderopvang","sfcIcon_name": "baby-bottle"},
@@ -28,7 +31,9 @@ cats = [
     {"mainCategoryIdentification": 3029,"description": "Huur","sfcIcon_name": "calendar-check"},
     {"mainCategoryIdentification": 3030,"description": "Hypotheek","sfcIcon_name": "house-check"},
     {"mainCategoryIdentification": 3031,"description": "Belastingen","sfcIcon_name": "paper-tax"},
-    {"mainCategoryIdentification": 3032,"description": "Toeslagen","sfcIcon_name": "paper-euro"},
+    {"mainCategoryIdentification": 3032,"description": "Toeslagen","sfcIcon_name": "paper-euro"}]
+    */
+
     {"mainCategoryIdentification": 3034,"description": "Creditcard","sfcIcon_name": "bankcard"},
     {"mainCategoryIdentification": 3035,"description": "Lenen","sfcIcon_name": "bag-money"},
     {"mainCategoryIdentification": 3036,"description": "Contanten","sfcIcon_name": "wallet"},
@@ -62,10 +67,9 @@ function download(filename, text) {
 content = "id|amount|time|bookingtime|description|other|other_iban|cat"+ "\n";
 
 function GetRows(rows){
-    console.log(rows);
+    //console.log(rows);
         rows.forEach(function(row) {
-                              var items = row.__ngContext__[22].items;
-                              
+                              var items = row.__ngContext__[22].items;                              
                               items.forEach(
                                   function(item){
                                 
@@ -78,7 +82,7 @@ function GetRows(rows){
                                       var cat = trans.category.mainCategoryIdentification;
                                       var other_iban = trans.otherParty.iban;
                                       var time= trans.timestamp;
-                                      console.log(id + "|" + amount + "|" + time + "|" + bookingtime + "|" + description + "|" + other + "|" + other_iban + "|" + cat +"\n");
+                                      //console.log(id + "|" + amount + "|" + time + "|" + bookingtime + "|" + description + "|" + other + "|" + other_iban + "|" + cat +"\n");
                                       content += id + "|" + amount + "|" + time + "|" + bookingtime + "|" + description + "|" + other + "|" + other_iban + "|" + cat +"\n";        
                                       }
                               ); // loop items      
@@ -86,26 +90,28 @@ function GetRows(rows){
                       ); // loop row     
 }
 
-async function LoadPage(jaartal, maandpar2, category, teller) {// inner functions also async https://bobbyhadz.com/blog/javascript-await-is-only-valid-in-async-functions#:~:text=The%20%22await%20is%20only%20valid,directly%20enclosing%20function%20as%20async%20.
-    console.log('wordt gestart over ' + 4 * teller + ' seconden' );
-    await sleep(4000 * teller);
-    let w = window.open('https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month='+ jaartal +'-'+ maandpar2 + '&category='+category, 's');
+async function LoadPage(jaartal, maandpar2, category, teller, catt) {// inner functions also async https://bobbyhadz.com/blog/javascript-await-is-only-valid-in-async-functions#:~:text=The%20%22await%20is%20only%20valid,directly%20enclosing%20function%20as%20async%20.
+    var aantalseconden = 7000 * 8/5;
+    console.log('wordt gestart over ' + (aantalseconden/1000) * teller + ' seconden' );
+    
+    await sleep((aantalseconden * teller) + ((catt / (aantalseconden/1000)) * aantalseconden));
+    let w = window.open('https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month='+ jaartal +'-'+ maandpar2 + '&category='+category, category);
     let rows = w.document.querySelectorAll("senses-timeline-group");
     GetRows(rows);
 }
 
 function LoopMaanden() {
-var teller = 0;  
 
+var catteller = 0;
     cats.forEach( (x)=> {
     category = x['mainCategoryIdentification'];
-    
+    var teller = 0;  
 
-    //category = '3004';
+   // category = '3004';
             var arr = [...Array(12).keys()];
-            var maanden = arr.map((x)=> [x +1, category]);
-            var arr7 = [...Array(6).keys()];
-            var maanden7 = arr7.map((x)=> [x +1, category]);
+            var maanden = arr.map((x)=> [x +1, category, catteller]);
+            var arr7 = [...Array(7).keys()];
+            var maanden7 = arr7.map((x)=> [x +1, category, catteller]);
             var scope = [
                 [2020, maanden],
                 [2021, maanden],
@@ -124,13 +130,13 @@ var teller = 0;
                                 let maandparr = '00' + maand[0];
                                 maandparr = maandparr.slice(-2);  
                                 let category = maand[1];
-                                LoadPage(jaartal, maandparr, category,teller);
+                                LoadPage(jaartal, maandparr, category,teller, maand[2]);
                       } //loop maand                
                     )            
                 } // loop jaar         
             ) // loop scope
-
-    })
+    catteller++;
+    }) // loop cat
 }
 
 LoopMaanden(this); //starten vanaf deze page https://bankieren.rabobank.nl/online/nl/dashboard
