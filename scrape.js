@@ -86,9 +86,10 @@ function GetRows(rows){
                       ); // loop row     
 }
 
-async function LoadPage(jaartal, maand, category) {
+async function LoadPage(jaartal, maand, category, teller) {
+    console.log('wordt gestart over ' + 4 * teller + ' seconden' );
+    await sleep(4000 * teller);
     let w = window.open('https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month='+ jaartal +'-'+ maand + '&category='+category, 's');
-    await sleep(3000); 
     let rows = w.document.querySelectorAll("senses-timeline-group");
     GetRows(rows);
 }
@@ -100,11 +101,12 @@ async function LoopMaanden() {
     var maanden7 = arr7.map((x)=> x +1);
     var scope = [
         //[2020, maanden],
-        //[2021, maanden],
+        [2021, maanden7],
         [2022, maanden7]
     ]
     
   //  console.log(scope);
+    var teller = 0;
     scope.forEach(
         async (jaar) =>  { // inner functions also async https://bobbyhadz.com/blog/javascript-await-is-only-valid-in-async-functions#:~:text=The%20%22await%20is%20only%20valid,directly%20enclosing%20function%20as%20async%20.
             var jaartal = jaar[0];
@@ -112,16 +114,16 @@ async function LoopMaanden() {
             
             maanden.forEach( 
               async (maand) => {
-                  //  console.log(jaartal + ' ' + maand )
-                        await sleep(7000* maand); 
+                  //await sleep(7000*teller); 
+                        teller++;
+                        console.log(teller);
                         mint = maand;
                         maand = '00' + maand;
                         maand = maand.slice(-2);
                         category = '3004';
-                        console.log(maand);                         
-                        LoadPage(jaartal, maand, category);
-              } //loop maand
-                
+                        //console.log(maand);                         
+                        LoadPage(jaartal, maand, category,teller);
+              } //loop maand                
             )            
         } // loop jaar         
     ) // loop scope
