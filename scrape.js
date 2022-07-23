@@ -86,48 +86,49 @@ function GetRows(rows){
                       ); // loop row     
 }
 
-async function LoadPage(jaartal, maand, category, teller) {
+async function LoadPage(jaartal, maandpar2, category, teller) {// inner functions also async https://bobbyhadz.com/blog/javascript-await-is-only-valid-in-async-functions#:~:text=The%20%22await%20is%20only%20valid,directly%20enclosing%20function%20as%20async%20.
     console.log('wordt gestart over ' + 4 * teller + ' seconden' );
     await sleep(4000 * teller);
-    let w = window.open('https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month='+ jaartal +'-'+ maand + '&category='+category, 's');
+    let w = window.open('https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month='+ jaartal +'-'+ maandpar2 + '&category='+category, 's');
     let rows = w.document.querySelectorAll("senses-timeline-group");
     GetRows(rows);
 }
 
-async function LoopMaanden() {
+function LoopMaanden() {
+var teller = 0;  
+    category = '3004';
     var arr = [...Array(12).keys()];
-    var maanden = arr.map((x)=> x +1);
-    var arr7 = [...Array(3).keys()];
-    var maanden7 = arr7.map((x)=> x +1);
+    var maanden = arr.map((x)=> [x +1, category]);
+    var arr7 = [...Array(2).keys()];
+    var maanden7 = arr7.map((x)=> [x +1, category]);
     var scope = [
         //[2020, maanden],
         [2021, maanden7],
         [2022, maanden7]
     ]
     
-  //  console.log(scope);
-    var teller = 0;
+
     scope.forEach(
-        async (jaar) =>  { // inner functions also async https://bobbyhadz.com/blog/javascript-await-is-only-valid-in-async-functions#:~:text=The%20%22await%20is%20only%20valid,directly%20enclosing%20function%20as%20async%20.
+         (jaar) =>  { 
             var jaartal = jaar[0];
-            var maanden = jaar[1];   
+            var maanden = jaar[1]; 
             
-            maanden.forEach( 
-              async (maand) => {
-                  //await sleep(7000*teller); 
+             
+             maanden.forEach( 
+               (maand) => {                  
                         teller++;
-                        console.log(teller);
-                        mint = maand;
-                        maand = '00' + maand;
-                        maand = maand.slice(-2);
-                        category = '3004';
-                        //console.log(maand);                         
-                        LoadPage(jaartal, maand, category,teller);
+                        let mint = maand[0];
+                        let maandparr = '00' + maand[0];
+                        maandparr = maandparr.slice(-2);  
+                        let category = maand[1];
+                        LoadPage(jaartal, maandparr, category,teller);
               } //loop maand                
-            )            
+            )
+            
         } // loop jaar         
     ) // loop scope
 }
 
 LoopMaanden(this); //starten vanaf deze page https://bankieren.rabobank.nl/online/nl/dashboard
 //console.log(content);
+
