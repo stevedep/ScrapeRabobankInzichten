@@ -96,37 +96,41 @@ async function LoadPage(jaartal, maandpar2, category, teller) {// inner function
 
 function LoopMaanden() {
 var teller = 0;  
-    category = '3004';
-    var arr = [...Array(12).keys()];
-    var maanden = arr.map((x)=> [x +1, category]);
-    var arr7 = [...Array(2).keys()];
-    var maanden7 = arr7.map((x)=> [x +1, category]);
-    var scope = [
-        //[2020, maanden],
-        [2021, maanden7],
-        [2022, maanden7]
-    ]
+
+    cats.forEach( (x)=> {
+    category = x['mainCategoryIdentification'];
     
 
-    scope.forEach(
-         (jaar) =>  { 
-            var jaartal = jaar[0];
-            var maanden = jaar[1]; 
+    //category = '3004';
+            var arr = [...Array(12).keys()];
+            var maanden = arr.map((x)=> [x +1, category]);
+            var arr7 = [...Array(6).keys()];
+            var maanden7 = arr7.map((x)=> [x +1, category]);
+            var scope = [
+                [2020, maanden],
+                [2021, maanden],
+                [2022, maanden7]
+            ]
             
-             
-             maanden.forEach( 
-               (maand) => {                  
-                        teller++;
-                        let mint = maand[0];
-                        let maandparr = '00' + maand[0];
-                        maandparr = maandparr.slice(-2);  
-                        let category = maand[1];
-                        LoadPage(jaartal, maandparr, category,teller);
-              } //loop maand                
-            )
-            
-        } // loop jaar         
-    ) // loop scope
+        
+            scope.forEach(
+                 (jaar) =>  { 
+                    var jaartal = jaar[0];
+                    var maanden = jaar[1];   
+                     maanden.forEach( 
+                       (maand) => {                  
+                                teller++;
+                                let mint = maand[0];
+                                let maandparr = '00' + maand[0];
+                                maandparr = maandparr.slice(-2);  
+                                let category = maand[1];
+                                LoadPage(jaartal, maandparr, category,teller);
+                      } //loop maand                
+                    )            
+                } // loop jaar         
+            ) // loop scope
+
+    })
 }
 
 LoopMaanden(this); //starten vanaf deze page https://bankieren.rabobank.nl/online/nl/dashboard
