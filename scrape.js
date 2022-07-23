@@ -61,13 +61,42 @@ function download(filename, text) {
 
 content = "id|amount|time|bookingtime|description|other|other_iban|cat"+ "\n";
 
+function GetRows(rows){
+    console.log(rows);
+        rows.forEach(function(row) {
+                              var items = row.__ngContext__[22].items;
+                              
+                              items.forEach(
+                                  function(item){
+                                
+                                      var trans = item.transaction;
+                                      var id = trans.id;
+                                      var amount = trans.amount;
+                                      var bookingtime = trans.bookingtime;
+                                      var description = trans.description;
+                                      var other = trans.otherParty.fullName;
+                                      var cat = trans.category.mainCategoryIdentification;
+                                      var other_iban = trans.otherParty.iban;
+                                      var time= trans.timestamp;
+                                      console.log(id + "|" + amount + "|" + time + "|" + bookingtime + "|" + description + "|" + other + "|" + other_iban + "|" + cat +"\n");
+                                      content += id + "|" + amount + "|" + time + "|" + bookingtime + "|" + description + "|" + other + "|" + other_iban + "|" + cat +"\n";        
+                                      }
+                              ); // loop items      
+                            } // row function 
+                      ); // loop row     
+}
 
-
+async function LoadPage(jaartal, maand, category) {
+    let w = window.open('https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month='+ jaartal +'-'+ maand + '&category='+category, 's');
+    await sleep(3000); 
+    let rows = w.document.querySelectorAll("senses-timeline-group");
+    GetRows(rows);
+}
 
 async function LoopMaanden() {
     var arr = [...Array(12).keys()];
     var maanden = arr.map((x)=> x +1);
-    var arr7 = [...Array(2).keys()];
+    var arr7 = [...Array(3).keys()];
     var maanden7 = arr7.map((x)=> x +1);
     var scope = [
         //[2020, maanden],
@@ -84,41 +113,13 @@ async function LoopMaanden() {
             maanden.forEach( 
               async (maand) => {
                   //  console.log(jaartal + ' ' + maand )
+                        await sleep(7000* maand); 
                         mint = maand;
-                        
                         maand = '00' + maand;
                         maand = maand.slice(-2);
                         category = '3004';
-                        console.log(maand);
-                        await sleep(4000* maand);  
-                        let w = window.open('https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month='+ jaartal +'-'+ maand + '&category='+category, 's');
-                            
-                        //await sleep(6000* maand);  
-                        var rows = w.document.querySelectorAll("senses-timeline-group");
-                      
-                        console.log(rows);
-                        rows.forEach(function(row) {
-                                              var items = row.__ngContext__[22].items;
-                                              
-                                              items.forEach(
-                                                  function(item){
-                                                
-                                                      var trans = item.transaction;
-                                                      var id = trans.id;
-                                                      var amount = trans.amount;
-                                                      var bookingtime = trans.bookingtime;
-                                                      var description = trans.description;
-                                                      var other = trans.otherParty.fullName;
-                                                      var cat = trans.category.mainCategoryIdentification;
-                                                      var other_iban = trans.otherParty.iban;
-                                                      var time= trans.timestamp;
-                                                      console.log(id + "|" + amount + "|" + time + "|" + bookingtime + "|" + description + "|" + other + "|" + other_iban + "|" + cat +"\n");
-                                                      content += id + "|" + amount + "|" + time + "|" + bookingtime + "|" + description + "|" + other + "|" + other_iban + "|" + cat +"\n";        
-                                                      }
-                                              ); // loop items      
-                                            } // row function 
-                                      ); // loop row                 
-                          await sleep(6000*maand);
+                        console.log(maand);                         
+                        LoadPage(jaartal, maand, category);
               } //loop maand
                 
             )            
