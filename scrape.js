@@ -1,69 +1,3 @@
-cats =   [
-    /*
-    {"mainCategoryIdentification": 3001,"description": "Eigen rekening","sfcIcon_name": "money-bill-arrows"},
-    {"mainCategoryIdentification": 3002,"description": "Sparen & beleggen","sfcIcon_name": "piggybank"},
-    {"mainCategoryIdentification": 3003,"description": "Hobby’s & vrije tijd","sfcIcon_name": "ticket"},
-    {"mainCategoryIdentification": 3004,"description": "Boodschappen","sfcIcon_name": "cart"},
-    {"mainCategoryIdentification": 3005,"description": "Uit eten & drinken","sfcIcon_name": "cocktail"},
-    {"mainCategoryIdentification": 3033,"description": "Vakantie","sfcIcon_name": "parasol"},
-    {"mainCategoryIdentification": 3006,"description": "Sport","sfcIcon_name": "reward"},
-    {"mainCategoryIdentification": 3007,"description": "Kleding & sieraden","sfcIcon_name": "coat-hanger"},
-    {"mainCategoryIdentification": 3008,"description": "Verzorging & gezondheid","sfcIcon_name": "heart-pulse-line"},
-    {"mainCategoryIdentification": 3039,"description": "Vervoer","sfcIcon_name": "car"},
-    {"mainCategoryIdentification": 3009,"description": "Cadeaus","sfcIcon_name": "gift"},
-    {"mainCategoryIdentification": 3012,"description": "Goede doelen","sfcIcon_name": "hand-heart"},
-    {"mainCategoryIdentification": 3013,"description": "Internet, TV & bellen","sfcIcon_name": "signal"},
-    {"mainCategoryIdentification": 3040,"description": "Huishouden & elektronica","sfcIcon_name": "table-lamp"}]
-
-    
-    {"mainCategoryIdentification": 3041,"description": "Tuin & dier","sfcIcon_name": "bird"},
-    {"mainCategoryIdentification": 3019,"description": "Onderwijs","sfcIcon_name": "book-cover"},
-    {"mainCategoryIdentification": 3020,"description": "Kinderopvang","sfcIcon_name": "baby-bottle"},
-    {"mainCategoryIdentification": 3042,"description": "Zak- & kleedgeld","sfcIcon_name": "purse"},
-    {"mainCategoryIdentification": 3021,"description": "Verzekeringen","sfcIcon_name": "security"},
-    {"mainCategoryIdentification": 3022,"description": "Energie & water","sfcIcon_name": "house-tree"},
-    {"mainCategoryIdentification": 3023,"description": "Klussen & onderhoud","sfcIcon_name": "wrench"},
-    {"mainCategoryIdentification": 3024,"description": "Salaris","sfcIcon_name": "money-bills"},
-    {"mainCategoryIdentification": 3025,"description": "Uitkering","sfcIcon_name": "envelope-euro"},
-    {"mainCategoryIdentification": 3026,"description": "Pensioen","sfcIcon_name": "sunrise"},
-    {"mainCategoryIdentification": 3027,"description": "Stufi","sfcIcon_name": "baret"},
-    {"mainCategoryIdentification": 3028,"description": "Alimentatie","sfcIcon_name": "family"},
-    {"mainCategoryIdentification": 3029,"description": "Huur","sfcIcon_name": "calendar-check"},
-    {"mainCategoryIdentification": 3030,"description": "Hypotheek","sfcIcon_name": "house-check"},
-    {"mainCategoryIdentification": 3031,"description": "Belastingen","sfcIcon_name": "paper-tax"},
-    {"mainCategoryIdentification": 3032,"description": "Toeslagen","sfcIcon_name": "paper-euro"}]
-    */
-
-    {"mainCategoryIdentification": 3034,"description": "Creditcard","sfcIcon_name": "bankcard"},
-    {"mainCategoryIdentification": 3035,"description": "Lenen","sfcIcon_name": "bag-money"},
-    {"mainCategoryIdentification": 3036,"description": "Contanten","sfcIcon_name": "wallet"},
-    {"mainCategoryIdentification": 3037,"description": "Bankkosten","sfcIcon_name": "building"},
-    {"mainCategoryIdentification": 3038,"description": "Betaalverzoeken","sfcIcon_name": "hand-euro"},
-    {"mainCategoryIdentification": 3000,"description": "Overig","sfcIcon_name": "label"}];
-
-
-//const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
-function download(filename, text) {
-    var pom = document.createElement('a');
-    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    pom.setAttribute('download', filename);
-
-    if (document.createEvent) {
-        var event = document.createEvent('MouseEvents');
-        event.initEvent('click', true, true);
-        pom.dispatchEvent(event);
-    }
-    else {
-        pom.click();
-    }
-}
-
 content = "id|amount|time|bookingtime|description|other|other_iban|cat"+ "\n";
 
 function GetRows(rows){
@@ -90,55 +24,59 @@ function GetRows(rows){
                       ); // loop row     
 }
 
-async function LoadPage(jaartal, maandpar2, category, teller, catt) {// inner functions also async https://bobbyhadz.com/blog/javascript-await-is-only-valid-in-async-functions#:~:text=The%20%22await%20is%20only%20valid,directly%20enclosing%20function%20as%20async%20.
-    var aantalseconden = 7000 * 8/5;
-    console.log('wordt gestart over ' + (aantalseconden/1000) * teller + ' seconden' );
+
+/**
+// https://stackoverflow.com/questions/34863788/how-to-check-if-an-element-has-been-loaded-on-a-page-before-running-a-script
+ * Wait for an element before resolving a promise
+ * @param {String} querySelector - Selector of element to wait for
+ * @param {Integer} timeout - Milliseconds to wait before timing out, or 0 for no timeout              
+ */
+function waitForElement(querySelector, timeout=0){
+    const startTime = new Date().getTime();
+    return new Promise((resolve, reject)=>{
+        const timer = setInterval(()=>{
+            const now = new Date().getTime();
+            if(w.document.querySelectorAll(querySelector).length > 0){
+                let rows = w.document.querySelectorAll("senses-timeline-group");
+                GetRows(rows);  
+                console.log('loaded');
+                console.log(content);
+                clearInterval(timer);
+                resolve();
+            }else if(timeout && now - startTime >= timeout){
+                clearInterval(timer);
+                reject();
+            }
+        }, 1000);
+    });
+}
+
+
+
+
+var jaartal = 2021;
+var maandpar2 = '11';
+var category = 3024;
+
+
+content = "id|amount|time|bookingtime|description|other|other_iban|cat"+ "\n";
+urls = ["https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month=2021-01&category=3024",
+"https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month=2021-02&category=3024",
+    "https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month=2021-03&category=3024"]
     
-    await sleep((aantalseconden * teller) + ((catt / (aantalseconden/1000)) * aantalseconden));
-    let w = window.open('https://bankieren.rabobank.nl/online/nl/dashboard/insights/categorie-overzicht/categorie-details?accountId=g3tQUYG-BCRy7FIZH1pgLQ&month='+ jaartal +'-'+ maandpar2 + '&category='+category, category);
-    let rows = w.document.querySelectorAll("senses-timeline-group");
-    GetRows(rows);
+
+
+function loop_url(i) {
+      let w = window.open(urls[i], 'new');
+      waitForElement("senses-timeline-group", 15000).then(function(){
+            //w.close();
+            if (i<3) {
+              i++;
+              loop_url(i);
+            }
+      }).catch(()=>{
+          console.log("element did not load in 15 seconds");
+      });
 }
 
-function LoopMaanden() {
-
-var catteller = 0;
-    cats.forEach( (x)=> {
-    category = x['mainCategoryIdentification'];
-    var teller = 0;  
-
-   // category = '3004';
-            var arr = [...Array(12).keys()];
-            var maanden = arr.map((x)=> [x +1, category, catteller]);
-            var arr7 = [...Array(7).keys()];
-            var maanden7 = arr7.map((x)=> [x +1, category, catteller]);
-            var scope = [
-                [2020, maanden],
-                [2021, maanden],
-                [2022, maanden7]
-            ]
-            
-        
-            scope.forEach(
-                 (jaar) =>  { 
-                    var jaartal = jaar[0];
-                    var maanden = jaar[1];   
-                     maanden.forEach( 
-                       (maand) => {                  
-                                teller++;
-                                let mint = maand[0];
-                                let maandparr = '00' + maand[0];
-                                maandparr = maandparr.slice(-2);  
-                                let category = maand[1];
-                                LoadPage(jaartal, maandparr, category,teller, maand[2]);
-                      } //loop maand                
-                    )            
-                } // loop jaar         
-            ) // loop scope
-    catteller++;
-    }) // loop cat
-}
-
-LoopMaanden(this); //starten vanaf deze page https://bankieren.rabobank.nl/online/nl/dashboard
-//console.log(content);
-
+loop_url(0);
