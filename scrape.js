@@ -167,7 +167,7 @@ var w; //declare globally
 
 function loop_url(i) {
       w = window.open(urls[i], 'new');
-      waitForElement("senses-timeline-group", 15000).then(function(){
+      waitForElement("senses-timeline-group", 4000).then(function(){
             //w.close();
             if (i<=urls.length-1) {
                 console.log(i);
@@ -187,4 +187,4 @@ function loop_url(i) {
       });
 }
 
-loop_url(0);
+loop_url(100);
